@@ -25,19 +25,18 @@ public class AppClient {
 
         //启动客户端的辅助类
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap = bootstrap.group(group)
-                .remoteAddress(new InetSocketAddress(8080))
-                //选择初始化一个channel
-                .channel(NioSocketChannel.class)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-
-                    }
-                });
-
-
         try {
+            bootstrap = bootstrap.group(group)
+                    .remoteAddress(new InetSocketAddress(8080))
+                    //选择初始化一个channel
+                    .channel(NioSocketChannel.class)
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+
+                        }
+                    });
+
             // 尝试连接服务器
             ChannelFuture channelFuture = bootstrap.connect().sync();
             // 获取channel 并写出数据
@@ -45,7 +44,13 @@ public class AppClient {
             // 阻塞程序 等待接收消息
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+        } finally {
+            try {
+                group.shutdownGracefully().sync();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
