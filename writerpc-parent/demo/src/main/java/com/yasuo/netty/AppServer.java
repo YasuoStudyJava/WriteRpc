@@ -38,14 +38,15 @@ public class AppServer {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             // TODO 流水线上添加处理器
-                            socketChannel.pipeline().addLast();
+                            socketChannel.pipeline().addLast(new MyChannelHandler());
                         }
                     });
 
             // 4.绑定端口
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
+            System.out.println("在" + channelFuture.channel().localAddress() + "上开启监听");
 
-            // 5.关闭
+            // 5.关闭  .sync()阻塞当前线程
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -61,6 +62,10 @@ public class AppServer {
         }
 
 
+    }
+
+    public static void main(String[] args) {
+        new AppServer(8080).Start();
     }
 
 }
